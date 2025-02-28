@@ -22,6 +22,42 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    fun compareBitmapUserAndIntArrayMau(bitmapUser: Bitmap, threshold: Int = 10): Array<IntArray> {
+        val width = bitmapUser.width.apply {
+            if (this != intArrayMau[0].size) {
+                Log.d("compareBitmapUserAndIntArrayMau", "width khac nhau")
+            } else {
+                Log.d("compareBitmapUserAndIntArrayMau", "width bang nhau")
+            }
+        }
+        val height = bitmapUser.height.apply {
+            if (this != intArrayMau.size) {
+                Log.d("compareBitmapUserAndIntArrayMau", "height khac nhau")
+            } else {
+                Log.d("compareBitmapUserAndIntArrayMau", "height bang nhau")
+            }
+        }
+        Log.d("compareBitmapUserAndIntArrayMau", "bat dau")
+
+        for (y in 0 until height) {
+//            println("$y")
+            for (x in 0 until width) {
+                val pixelUser = bitmapUser.getPixel(x, y)
+                val pixelMau = intArrayMau[y][x]
+                if(!isNearlyBlack(pixelUser, threshold) && pixelMau == pixelUser) {
+//                    print("$x ")
+                }
+            }
+//            println("")
+        }
+
+        Log.d("compareBitmapUserAndIntArrayMau", "ket thuc")
+        val binaryArray = Array(height) { IntArray(width) }
+
+        return binaryArray
+    }
+
     fun getBitmapFromDrawableWithoutScaling(context: Context, drawableId: Int): Bitmap {
         val options = BitmapFactory.Options().apply {
             inScaled = false // Tắt scale tự động
@@ -49,37 +85,5 @@ class MainActivity : AppCompatActivity() {
         return binaryArray
     }
 
-    fun compareBitmapUserAndIntArrayMau(bitmapUser: Bitmap, threshold: Int = 10): Array<IntArray> {
-        val width = bitmapUser.width.apply {
-            if (this != intArrayMau[0].size) {
-                Log.d("compareBitmapUserAndIntArrayMau", "width khac nhau")
-            } else {
-                Log.d("compareBitmapUserAndIntArrayMau", "width bang nhau")
-            }
-        }
-        val height = bitmapUser.height.apply {
-            if (this != intArrayMau.size) {
-                Log.d("compareBitmapUserAndIntArrayMau", "height khac nhau")
-            } else {
-                Log.d("compareBitmapUserAndIntArrayMau", "height bang nhau")
-            }
-        }
-        Log.d("compareBitmapUserAndIntArrayMau", "bat dau")
-        for (y in 0 until height) {
-            println("$y")
-            for (x in 0 until width) {
-                val pixelUser = bitmapUser.getPixel(x, y)
-                val pixelMau = intArrayMau[y][x]
-                if(!isNearlyBlack(pixelUser, threshold) && pixelMau == pixelUser) {
-                    print("$x ")
-                }
-            }
-            println("")
-        }
-        Log.d("compareBitmapUserAndIntArrayMau", "ket thuc")
-        val binaryArray = Array(height) { IntArray(width) }
-
-        return binaryArray
-    }
 
 }
