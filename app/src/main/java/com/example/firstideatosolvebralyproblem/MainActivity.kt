@@ -20,22 +20,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initBitmapMauAndIntArrayMau()
+
         val bitmapUser = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demo_6_co_wrong)
+        compareBitmapUserAndIntArrayMau(bitmapUser)
+
+
+    }
+
+    fun initBitmapMauAndIntArrayMau() {
         val bitmapMau = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demomau)
 
         intArrayMau = bitmapToBinaryArray(bitmapMau)
         intArrayChinhSua = bitmapToBinaryArray(bitmapMau)
-
-        compareBitmapUserAndIntArrayMau(bitmapUser)
-
-
-        Log.d("MainActivity", "numberOfPixelToFill: ${numberOfPixelToFill / 2}")
-        Log.d("MainActivity", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
-        Log.d("MainActivity", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
     }
 
     //TODO: check intArrayMau co empty khong roi moi duoc intArrayMau[0].size k la bi null exception
-    fun compareBitmapUserAndIntArrayMau(bitmapUser: Bitmap, threshold: Int = 10): Array<IntArray> {
+    fun compareBitmapUserAndIntArrayMau(bitmapUser: Bitmap, threshold: Int = 10) {
         val width = bitmapUser.width.apply {
             if (this != intArrayMau[0].size) {
                 Log.d("compareBitmapUserAndIntArrayMau", "width khac nhau")
@@ -67,9 +68,11 @@ class MainActivity : AppCompatActivity() {
         Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelsUser: $numberOfPixelsUser")
 
         Log.d("compareBitmapUserAndIntArrayMau", "ket thuc")
-        val binaryArray = Array(height) { IntArray(width) }
 
-        return binaryArray
+        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelToFill: ${numberOfPixelToFill / 2}")
+        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
+        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
+
     }
 
     fun checkSurrounding(x: Int, y: Int, pixel: Int = 1, thresholdToCheck: Int = 2) {
