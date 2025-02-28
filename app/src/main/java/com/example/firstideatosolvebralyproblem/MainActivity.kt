@@ -20,16 +20,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bitmapUser = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demo3)
+        val bitmapUser = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demo_6_co_wrong)
         val bitmapMau = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demomau)
 
         intArrayMau = bitmapToBinaryArray(bitmapMau)
-        intArrayChinhSua = intArrayMau.clone()
+        intArrayChinhSua = bitmapToBinaryArray(bitmapMau)
 
         compareBitmapUserAndIntArrayMau(bitmapUser)
 
 
-        Log.d("MainActivity", "numberOfPixelToFill: $numberOfPixelToFill")
+        Log.d("MainActivity", "numberOfPixelToFill: ${numberOfPixelToFill / 2}")
         Log.d("MainActivity", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
         Log.d("MainActivity", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
     }
@@ -51,17 +51,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
         Log.d("compareBitmapUserAndIntArrayMau", "bat dau")
+        var numberOfPixelsUser = 0
 
         for (y in 0 until height) {
             for (x in 0 until width) {
                 bitmapUser.getPixel(x, y). apply {
                     if(!isNearlyBlack(this, threshold)) {
-                        Log.d("compareBitmapUserAndIntArrayMau", "tim duoc net ve user tại điểm ($x, $y) pixel = $this")
-                        checkSurrounding(x, y, this)
+                        numberOfPixelsUser++
+//                        Log.d("compareBitmapUserAndIntArrayMau", "tim duoc net ve user tại điểm ($x, $y) pixel = $this")
+                        checkSurrounding(x, y)
                     }
                 }
             }
         }
+        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelsUser: $numberOfPixelsUser")
 
         Log.d("compareBitmapUserAndIntArrayMau", "ket thuc")
         val binaryArray = Array(height) { IntArray(width) }
@@ -69,55 +72,34 @@ class MainActivity : AppCompatActivity() {
         return binaryArray
     }
 
-    fun checkSurrounding(x: Int, y: Int, pixel: Int) {
-        val sb: StringBuilder = StringBuilder()
+    fun checkSurrounding(x: Int, y: Int, pixel: Int = 1, thresholdToCheck: Int = 2) {
+//        val sb: StringBuilder = StringBuilder()
         var isRightPixel = false
-        for (i in (x - 2)..(x + 2)) {
-            for (j in (y - 2)..(y + 2)) {
+        for (i in (x - thresholdToCheck)..(x + thresholdToCheck)) {
+            for (j in (y - thresholdToCheck)..(y + thresholdToCheck)) {
                 if (i in 0 until intArrayMau[0].size && j in 0 until intArrayMau.size) { // Kiểm tra trong giới hạn mảng
                     if (pixel == intArrayMau[j][i]) {
-                        sb.append("($i, $j) ")
+//                        sb.append("($i, $j) ")
                         isRightPixel = true
                         if (pixel == intArrayChinhSua[j][i]) {
-                            sb.append("ok+1 ")
+//                            sb.append("ok+1 ")
                             //pixel nay khac mau den (check qua !isNearlyBlack) r nen k can lo nua
                             intArrayChinhSua[j][i] = -1
                             numberOfPixelUserFilledRight++
                         } else {
-                            sb.append("da co ")
+//                            sb.append("da co ")
                         }
                     }
                 }
             }
         }
-//        if (isRightPixel) {
-//            sb.append("dung roi")
-//            sb.append("pixel = $pixel, \n ")
-//            for (i in (x - 2)..(x + 2)) {
-//                for (j in (y - 2)..(y + 2)) {
-//                    if (i in 0 until intArrayMau[0].size && j in 0 until intArrayMau.size) { // Kiểm tra trong giới hạn mảng
-//                        sb.append("j = $j, i = $i, ${intArrayMau[j][i]}")
-//                    }
-//                }
-//            }
-//
-//            numberOfPixelUserFilledWrong++
-//        }
 
         if (!isRightPixel) {
-            sb.append("sai roi")
-//            sb.append("pixel = $pixel, \n ")
-//            for (i in (x - 2)..(x + 2)) {
-//                for (j in (y - 2)..(y + 2)) {
-//                    if (i in 0 until intArrayMau[0].size && j in 0 until intArrayMau.size) { // Kiểm tra trong giới hạn mảng
-//                        sb.append("j = $j, i = $i, ${intArrayMau[j][i]}")
-//                    }
-//                }
-//            }
+//            sb.append("sai roi")
 
             numberOfPixelUserFilledWrong++
         }
-        Log.d("checkSurrounding", sb.toString())
+//        Log.d("checkSurrounding", sb.toString())
     }
 
     fun getBitmapFromDrawableWithoutScaling(context: Context, drawableId: Int): Bitmap {
@@ -141,27 +123,15 @@ class MainActivity : AppCompatActivity() {
         for (y in 0 until height) {
             for (x in 0 until width) {
                 bitmap.getPixel(x, y).apply {
-                    binaryArray[y][x] = this
                     if(!isNearlyBlack(this, threshold)) {
+                        binaryArray[y][x] = 1
                         numberOfPixelToFill++
+                    } else {
+                        binaryArray[y][x] = 0
                     }
                 }
             }
         }
-        Log.d("bitmapToBinaryArray", "day la intArray")
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                print(" " + binaryArray[y][x])
-                bitmap.getPixel(x, y).apply {
-                    binaryArray[y][x] = this
-                    if(!isNearlyBlack(this, threshold)) {
-                        numberOfPixelToFill++
-                    }
-                }
-            }
-            print("\n")
-        }
-
         return binaryArray
     }
 
