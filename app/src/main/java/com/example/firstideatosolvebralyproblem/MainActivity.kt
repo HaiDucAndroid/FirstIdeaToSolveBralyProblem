@@ -10,6 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var intArrayMau: Array<IntArray>
+    private lateinit var intArrayChinhSua: Array<IntArray>
+
+    var numberOfPixelToFill = 0
+    var numberOfPixelUserFilledRight = 0
+    var numberOfPixelUserFilledWrong = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,10 +22,16 @@ class MainActivity : AppCompatActivity() {
 
         val bitmapUser = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demo3)
         val bitmapMau = getBitmapFromDrawableWithoutScaling(this@MainActivity, R.drawable.demomau)
+
         intArrayMau = bitmapToBinaryArray(bitmapMau)
+        intArrayChinhSua = intArrayMau.clone()
+
         compareBitmapUserAndIntArrayMau(bitmapUser)
 
 
+        Log.d("MainActivity", "numberOfPixelToFill: $numberOfPixelToFill")
+        Log.d("MainActivity", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
+        Log.d("MainActivity", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
     }
 
     //TODO: check intArrayMau co empty khong roi moi duoc intArrayMau[0].size k la bi null exception
@@ -40,13 +51,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         Log.d("compareBitmapUserAndIntArrayMau", "bat dau")
-        Log.d("compareBitmapUserAndIntArrayMau", "bat dau")
 
         for (y in 0 until height) {
             for (x in 0 until width) {
                 bitmapUser.getPixel(x, y). apply {
                     if(!isNearlyBlack(this, threshold)) {
-                        Log.d("compareBitmapUserAndIntArrayMau", "tim duoc net ve user tại điểm ($x, $y)")
+                        Log.d("compareBitmapUserAndIntArrayMau", "tim duoc net ve user tại điểm ($x, $y) pixel = $this")
                         checkSurrounding(x, y, this)
                     }
                 }
@@ -61,14 +71,51 @@ class MainActivity : AppCompatActivity() {
 
     fun checkSurrounding(x: Int, y: Int, pixel: Int) {
         val sb: StringBuilder = StringBuilder()
+        var isRightPixel = false
         for (i in (x - 2)..(x + 2)) {
             for (j in (y - 2)..(y + 2)) {
                 if (i in 0 until intArrayMau[0].size && j in 0 until intArrayMau.size) { // Kiểm tra trong giới hạn mảng
                     if (pixel == intArrayMau[j][i]) {
                         sb.append("($i, $j) ")
+                        isRightPixel = true
+                        if (pixel == intArrayChinhSua[j][i]) {
+                            sb.append("ok+1 ")
+                            //pixel nay khac mau den (check qua !isNearlyBlack) r nen k can lo nua
+                            intArrayChinhSua[j][i] = -1
+                            numberOfPixelUserFilledRight++
+                        } else {
+                            sb.append("da co ")
+                        }
                     }
                 }
             }
+        }
+//        if (isRightPixel) {
+//            sb.append("dung roi")
+//            sb.append("pixel = $pixel, \n ")
+//            for (i in (x - 2)..(x + 2)) {
+//                for (j in (y - 2)..(y + 2)) {
+//                    if (i in 0 until intArrayMau[0].size && j in 0 until intArrayMau.size) { // Kiểm tra trong giới hạn mảng
+//                        sb.append("j = $j, i = $i, ${intArrayMau[j][i]}")
+//                    }
+//                }
+//            }
+//
+//            numberOfPixelUserFilledWrong++
+//        }
+
+        if (!isRightPixel) {
+            sb.append("sai roi")
+//            sb.append("pixel = $pixel, \n ")
+//            for (i in (x - 2)..(x + 2)) {
+//                for (j in (y - 2)..(y + 2)) {
+//                    if (i in 0 until intArrayMau[0].size && j in 0 until intArrayMau.size) { // Kiểm tra trong giới hạn mảng
+//                        sb.append("j = $j, i = $i, ${intArrayMau[j][i]}")
+//                    }
+//                }
+//            }
+
+            numberOfPixelUserFilledWrong++
         }
         Log.d("checkSurrounding", sb.toString())
     }
@@ -93,8 +140,26 @@ class MainActivity : AppCompatActivity() {
         val binaryArray = Array(height) { IntArray(width) }
         for (y in 0 until height) {
             for (x in 0 until width) {
-                binaryArray[y][x] = bitmap.getPixel(x, y)
+                bitmap.getPixel(x, y).apply {
+                    binaryArray[y][x] = this
+                    if(!isNearlyBlack(this, threshold)) {
+                        numberOfPixelToFill++
+                    }
+                }
             }
+        }
+        Log.d("bitmapToBinaryArray", "day la intArray")
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                print(" " + binaryArray[y][x])
+                bitmap.getPixel(x, y).apply {
+                    binaryArray[y][x] = this
+                    if(!isNearlyBlack(this, threshold)) {
+                        numberOfPixelToFill++
+                    }
+                }
+            }
+            print("\n")
         }
 
         return binaryArray
