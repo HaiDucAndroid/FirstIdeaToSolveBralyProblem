@@ -25,6 +25,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvFilledRight: TextView
     private lateinit var tvFilledWrong: TextView
 
+    private lateinit var tv5: TextView
+    private lateinit var tv6: TextView
+
     var numberOfPixelOriginalToFill = 0
     var numberOfPixelUserFilledRight = 0
     var numberOfPixelUserFilledWrong = 0
@@ -70,10 +73,10 @@ class MainActivity : AppCompatActivity() {
             numberOfPixelUserFilledRight = 0
             numberOfPixelUserFilledWrong = 0
             numberOfPixelOriginalFilled = 0
-            Log.d("onCreate", "numberOfPixelOriginalToFill: ${numberOfPixelOriginalToFill}")
-            Log.d("onCreate", "numberOfPixelOriginalFilled: $numberOfPixelOriginalFilled")
-            Log.d("onCreate", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
-            Log.d("onCreate", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
+//            Log.d("onCreate", "numberOfPixelOriginalToFill: ${numberOfPixelOriginalToFill}")
+//            Log.d("onCreate", "numberOfPixelOriginalFilled: $numberOfPixelOriginalFilled")
+//            Log.d("onCreate", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
+//            Log.d("onCreate", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
             compareBitmapUserAndIntArrayMau(bitmapUser)
         }
 //        buttonCompare.setOnLongClickListener {
@@ -100,6 +103,8 @@ class MainActivity : AppCompatActivity() {
         tvFilledRight = findViewById<TextView>(R.id.tvUserFilledRight)
         tvFilledWrong = findViewById<TextView>(R.id.tvUserFilledWrong)
 
+        tv5 = findViewById<TextView>(R.id.textView5)
+        tv6 = findViewById<TextView>(R.id.textView6)
 
     }
     private fun uriToBitmap(uri: Uri): Bitmap {
@@ -129,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         val endTime = System.currentTimeMillis()
         val duration = endTime - startTime
 
-        Log.d("LoadData", "Thời gian load dữ liệu: ${duration}ms")
+        Log.d("LoadDataInitIntArrayChinhSua", "Thời gian load dữ liệu: ${duration}ms")
     }
     //TODO: check intArrayMau co empty khong roi moi duoc intArrayMau[0].size k la bi null exception
     fun compareBitmapUserAndIntArrayMau(bitmapUser: Bitmap, threshold: Int = 10) {
@@ -169,16 +174,20 @@ class MainActivity : AppCompatActivity() {
         tvFilledRight.text = "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight"
         tvFilledWrong.text = "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong"
 
+
+        tv5.text = "% hoan thanh: $numberOfPixelOriginalFilled / $numberOfPixelOriginalToFill"
+        tv6.text = "Loi sai: $numberOfPixelUserFilledWrong"
+
+
+
 //        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelsUserFilled: $numberOfPixelsUser")
 //
-//        Log.d("compareBitmapUserAndIntArrayMau", "ket thuc")
+        Log.d("compareBitmapUserAndIntArrayMau", "ket thuc")
 //
 //        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelOriginalToFill: ${numberOfPixelOriginalToFill}")
 //        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelOriginalFilled: ${numberOfPixelOriginalFilled}")
 //        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelUserFilledRight: $numberOfPixelUserFilledRight")
 //        Log.d("compareBitmapUserAndIntArrayMau", "numberOfPixelUserFilledWrong: $numberOfPixelUserFilledWrong")
-//
-
         initIntArrayChinhSua()
     }
 
@@ -230,6 +239,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun bitmapToBinaryArray(bitmap: Bitmap, threshold: Int = 10): Array<IntArray> {
+        val startTime = System.currentTimeMillis()
         numberOfPixelOriginalToFill = 0
 //        numberOfPixelOriginalFilled = 0
         val width = bitmap.width
@@ -247,6 +257,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        val endTime = System.currentTimeMillis()
+        val duration = endTime - startTime
+
+        Log.d("LoadDataBitmapToBinaryArray", "Thời gian load dữ liệu: ${duration}ms")
         return binaryArray
     }
 
